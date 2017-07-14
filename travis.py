@@ -13,7 +13,7 @@ headers = { \
 }
 
 _BASE_URL = "https://api.travis-ci.comi/"
-def _request(method="get", endpoint, headers=headers, **kwargs):
+def _request(method="get", endpoint="", headers=headers, **kwargs):
     """ Wrapper around requests.get and requests.post """
 
     if method == "post":
@@ -24,7 +24,7 @@ def _request(method="get", endpoint, headers=headers, **kwargs):
 def activate(owner, repo):
     """ Enables a repository on Travis CI """
 
-    response = _request(method="post", "repo/{}%2F{}/activate".format(owner, repo))
+    response = _request(method="post", endpoint="repo/{}%2F{}/activate".format(owner, repo))
     if response.status_code != 200:
         return
 
@@ -56,12 +56,12 @@ def build(owner, repo, branch):
         }
     }
 
-    response = _request(method="post", "repo/{}%2F{}/requests".format(owner, repo), data=json.dumps(payload))
+    response = _request(method="post", endpoint="repo/{}%2F{}/requests".format(owner, repo), data=json.dumps(payload))
     if response.status_code == 404:
         if not sync() or not activate(owner, repo):
             return
 
-        response = _request(method="post", "repo/{}%2F{}/requests".format(owner, repo), data=json.dumps(payload))
+        response = _request(method="post", endpoint="repo/{}%2F{}/requests".format(owner, repo), data=json.dumps(payload))
 
     elif response.status_code != 202:
         return
@@ -69,28 +69,28 @@ def build(owner, repo, branch):
 def get_jobs(build_id):
     """ Returns jobs associated with build whose id is build_id """
 
-    response = _request("build/{}".format(build_id))
+    response = _request(endpoint="build/{}".format(build_id))
     if response.status_code == 200:
         return response.json()["jobs"]
 
 def get_log_parts(job_id):
     """ Returns log parts for the job whose id is job_id """
 
-    response = _request("job/{}/log".format(job_id))
+    response = _request(endpoint="job/{}/log".format(job_id))
     if response.status_code == 200:
         return response.json()["log_parts"]
 
 def get_repo(owner, repo):
     """ Returns information about a repository """
 
-    response = _request("repo/{}%2F{}".format(owner, repo))
+    response = _request(endpoint="repo/{}%2F{}".format(owner, repo))
     if response.status_code == 200:
         return response.json()
 
 def get_user():
     """ Returns information about the current user """
 
-    response = _request("user")
+    response = _request(endpoint="user")
     if response.status_code == 200:
         return response.json()
 
@@ -101,7 +101,7 @@ def sync():
     if not user:
         return
 
-    response = _request("user/{}/sync".format(get_user()["id"]))
+    response = _request(endpoint="user/{}/sync".format(get_user()["id"]))
     if response.status_code != 200:
         return
 
