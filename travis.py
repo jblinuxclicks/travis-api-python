@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import json
 import os
 import requests
@@ -15,11 +13,19 @@ headers = { \
 _BASE_URL = "https://api.travis-ci.com/"
 def _request(method="get", endpoint="", headers=headers, **kwargs):
     """ Wrapper around requests.get and requests.post """
-    url = _BASE_URL + endpoint
-    if method == "post":
-        return requests.post(url, headers=headers, **kwargs)
+
+    methods = {
+        "get": requests.get,
+        "patch": requests.patch,
+        "post": requests.post
+    }
+
+    if method in methods:
+        request = methods[method]
     else:
-        return requests.get(url, headers=headers, **kwargs)
+        request = methods["get"]
+
+    return request(_BASE_URL + endpoint, headers=headers, **kwargs)
 
 def activate(owner, repo):
     """ Enables a repository on Travis CI """
@@ -34,6 +40,13 @@ def activate(owner, repo):
         if repo["active"]:
             return True
         sleep(1)
+
+def auto_cancel(owner, repo):
+    """ Enables auto-cancellation of Travis CI builds """
+
+    response = _request("patch", "repo/{}%2F{}/setting/auto_cancel_pushes".format(owner, repo), data='{ "setting.value": true }')
+    print(response)
+    return response.status_code == 200
 
 def build(owner, repo, branch):
     """ Triggers a build for owner/repo:branch, syncing and activating repo as necessary """
@@ -58,7 +71,7 @@ def build(owner, repo, branch):
 
     response = _request(method="post", endpoint="repo/{}%2F{}/requests".format(owner, repo), data=json.dumps(payload))
     if response.status_code == 404:
-        if not sync() or not activate(owner, repo):
+        if not sync() or not activate(owner, repo) or not auto_cancel(owner, repo):
             return
 
         response = _request(method="post", endpoint="repo/{}%2F{}/requests".format(owner, repo), data=json.dumps(payload))
