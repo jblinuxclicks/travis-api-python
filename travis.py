@@ -79,6 +79,8 @@ def build(owner, repo, branch):
     elif response.status_code != 202:
         return
 
+    return True
+
 def get_jobs(build_id):
     """ Returns jobs associated with build whose id is build_id """
 
@@ -124,5 +126,3 @@ def sync():
         if not user["is_syncing"]:
             return True
         sleep(1)
-
-
