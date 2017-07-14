@@ -1,3 +1,16 @@
+## Configuration
+1. Generate GitHub Personal Access Token per https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/.
+
+1. Install Travis CLI per https://github.com/travis-ci/travis.rb#installation.
+
+1. Run `travis login --github-token XXXX` (or `travis login --pro --github-token XXXX` for private repos), replacing `XXXX` with the Personal Access Token you generated per the first step.
+
+1. Run `traivs token` (or `travis token --pro` for private repos)
+
+1. Run `export TRAVIS_TOKEN=YYYY`, replacing `YYYY` with your actual Travis CI token per the previous step.
+
+## Reference
+
 #### `activate(owner, repo)`
   
   Enables repo on Travis CI. Return value indicates whether repo was enabled.
