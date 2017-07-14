@@ -55,4 +55,19 @@
 
 #### `sync()`
 
-  Syncs user's repos on Travis CI, and returns `True` when syncing is complete. Returns `None` on error. 
+  Syncs user's repos on Travis CI, and returns `True` when syncing is complete. Returns `None` on error.
+  
+## Usage
+```
+$ python
+>>> from travis import *
+>>> build("kzidane", "test", "master")
+True
+>>> get_jobs(50272658)                                                                         │Python 3.4.3 (default, Nov 17 2016, 01:08:31) 
+[{u'@representation': u'minimal', u'@href': u'/job/83011417', u'@type': u'job', u'id': 83011417│[GCC 4.8.4] on linux
+}] 
+...
+```
+
+## TODOs
+* add webhook notification
