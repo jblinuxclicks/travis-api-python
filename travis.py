@@ -12,14 +12,14 @@ headers = { \
     "Authorization": "token {}".format(os.environ["TRAVIS_TOKEN"])
 }
 
-_BASE_URL = "https://api.travis-ci.comi/"
+_BASE_URL = "https://api.travis-ci.com/"
 def _request(method="get", endpoint="", headers=headers, **kwargs):
     """ Wrapper around requests.get and requests.post """
-
+    url = _BASE_URL + endpoint
     if method == "post":
-        requests.post(_BASE_URL + endpoint, headers=headers, **kwargs)
+        return requests.post(url, headers=headers, **kwargs)
     else:
-        requests.get(_BASE_URL + endpoint, headers=headers, **kwargs)
+        return requests.get(url, headers=headers, **kwargs)
 
 def activate(owner, repo):
     """ Enables a repository on Travis CI """
