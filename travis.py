@@ -45,7 +45,6 @@ def auto_cancel(owner, repo):
     """ Enables auto-cancellation of Travis CI builds """
 
     response = _request("patch", "repo/{}%2F{}/setting/auto_cancel_pushes".format(owner, repo), data='{ "setting.value": true }')
-    print(response)
     return response.status_code == 200
 
 def build(owner, repo, branch):
@@ -116,7 +115,7 @@ def sync():
     if not user:
         return
 
-    response = _request(endpoint="user/{}/sync".format(get_user()["id"]))
+    response = _request(method="post", endpoint="user/{}/sync".format(user["id"]))
     if response.status_code != 200:
         return
 
