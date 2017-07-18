@@ -47,6 +47,14 @@ def auto_cancel(owner, repo):
     response = _request("patch", "repo/{}%2F{}/setting/auto_cancel_pushes".format(owner, repo), data='{ "setting.value": true }')
     return response.status_code == 200
 
+def disable_build_pushes(owner, repo):
+    response = _request("patch", "repo/{}%2F{}/setting/build_pushes".format(owner, repo), data='{ "setting.value": false }')
+    return response.status_code == 200
+
+def disable_build_pull_requests(owner, repo):
+    response = _request("patch", "repo/{}%2F{}/setting/build_pull_requests".format(owner, repo), data='{ "setting.value": false }')
+    return response.status_code == 200
+
 def build(owner, repo, branch):
     """ Triggers a build for owner/repo:branch, syncing and activating repo as necessary """
 
@@ -69,7 +77,8 @@ def build(owner, repo, branch):
                     "cd check50",
                     "pip3 install --user -r requirements.txt"
                 ],
-                "script": "python3 check50.py --local {} ../*".format(branch)
+                "script": "python3 check50.py --local {} ../*".format(branch),
+                "notifications": { "webhooks": "https://cs50.me/hooks/travis" }
             }
         }
     }
