@@ -114,6 +114,10 @@ def get_user():
     if response.status_code == 200:
         return response.json()
 
+def is_active(owner, repo):
+    repo = get_repo(owner, repo)
+    return repo and repo["active"]
+
 def sync():
     """ Syncs user's GitHub repositories so they are seen by Travis CI """
 
