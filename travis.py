@@ -58,6 +58,12 @@ def build(owner, repo, branch):
             "config": {
                 "language": "python",
                 "merge_mode": "replace",
+                "addons": {
+                    "apt": {
+                        "sources": [ {"sourceline": "ppa:cs50/ppa"} ],
+                        "packages": [ "libcs50" ]
+                     }
+                 },
                 "before_script": [
                     "git clone -b develop https://github.com/cs50/check50.git",
                     "cd check50",
