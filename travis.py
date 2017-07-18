@@ -55,6 +55,23 @@ def disable_build_pull_requests(owner, repo):
     response = _request("patch", "repo/{}%2F{}/setting/build_pull_requests".format(owner, repo), data='{ "setting.value": false }')
     return response.status_code == 200
 
+def configure(owner, repo):
+    _repo = get_repo(owner, repo)
+    if not repo:
+        sync()
+        _repo = get_repo(owner, repo)
+
+        if not _repo:
+            return
+
+    if (not _repo["active"] and not activate(owner, repo)) or \
+        not disable_build_pushes(owner, repo) or \
+        not disable_build_pull_requests(owner, repo) or \
+        not auto_cancel(owner, repo):
+            return
+
+    return True
+
 def build(owner, repo, branch):
     """ Triggers a build for owner/repo:branch, syncing and activating repo as necessary """
 
@@ -122,11 +139,7 @@ def get_user():
 
     response = _request(endpoint="user")
     if response.status_code == 200:
-        return response.json()
-
-def is_active(owner, repo):
-    repo = get_repo(owner, repo)
-    return repo and repo["active"]
+        return response.json
 
 def sync():
     """ Syncs user's GitHub repositories so they are seen by Travis CI """
