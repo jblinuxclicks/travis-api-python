@@ -65,6 +65,7 @@ def build(owner, repo, branch):
             "branch": branch,
             "config": {
                 "language": "python",
+                "python": "3.5",
                 "merge_mode": "replace",
                 "addons": {
                     "apt": {
@@ -77,7 +78,7 @@ def build(owner, repo, branch):
                     "cd check50",
                     "pip3 install -r requirements.txt"
                 ],
-                "script": "python3 check50.py --local {} ../*".format(branch),
+                "script": "python3 check50.py --full --local {} ../*".format(branch),
                 "notifications": { "webhooks": "https://cs50.me/hooks/travis" }
             }
         }
