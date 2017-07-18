@@ -75,7 +75,7 @@ def build(owner, repo, branch):
                 "before_script": [
                     "git clone -b develop https://github.com/cs50/check50.git",
                     "cd check50",
-                    "pip3 install --user -r requirements.txt"
+                    "pip3 install -r requirements.txt"
                 ],
                 "script": "python3 check50.py --local {} ../*".format(branch),
                 "notifications": { "webhooks": "https://cs50.me/hooks/travis" }
