@@ -27,6 +27,11 @@ def _request(method="get", endpoint="", headers=headers, **kwargs):
 
     return request(_BASE_URL + endpoint, headers=headers, **kwargs)
 
+def _toggle_setting(setting_name, value, owner, repo):
+    response = _request("patch", "repo/{}%2F{}/setting/{}".format(owner, repo, setting_name), data='{{ "setting.value": {} }}'.format(value))
+    return response.status_code == 200
+
+
 def activate(owner, repo):
     """ Enables a repository on Travis CI """
 
@@ -43,21 +48,17 @@ def activate(owner, repo):
 
 def auto_cancel(owner, repo):
     """ Enables auto-cancellation of Travis CI builds """
-
-    response = _request("patch", "repo/{}%2F{}/setting/auto_cancel_pushes".format(owner, repo), data='{ "setting.value": true }')
-    return response.status_code == 200
+    return _toggle_setting("auto_cancel_pushes", "true", owner, repo)
 
 def disable_build_pushes(owner, repo):
-    response = _request("patch", "repo/{}%2F{}/setting/build_pushes".format(owner, repo), data='{ "setting.value": false }')
-    return response.status_code == 200
+    return _toggle_setting("build_pushes", "false", owner, repo)
 
 def disable_build_pull_requests(owner, repo):
-    response = _request("patch", "repo/{}%2F{}/setting/build_pull_requests".format(owner, repo), data='{ "setting.value": false }')
-    return response.status_code == 200
+    return _toggle_setting("build_pull_requests", "false", owner, repo)
 
 def configure(owner, repo):
     _repo = get_repo(owner, repo)
-    if not repo:
+    if not _repo:
         sync()
         _repo = get_repo(owner, repo)
 
@@ -139,7 +140,7 @@ def get_user():
 
     response = _request(endpoint="user")
     if response.status_code == 200:
-        return response.json
+        return response.json()
 
 def sync():
     """ Syncs user's GitHub repositories so they are seen by Travis CI """
