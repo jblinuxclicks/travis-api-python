@@ -31,7 +31,6 @@ def _toggle_setting(setting_name, value, owner, repo):
     response = _request("patch", "repo/{}%2F{}/setting/{}".format(owner, repo, setting_name), data='{{ "setting.value": {} }}'.format(value))
     return response.status_code == 200
 
-
 def activate(owner, repo):
     """ Enables a repository on Travis CI """
 
@@ -85,17 +84,6 @@ def build(owner, repo, branch):
                 "language": "python",
                 "python": "3.5",
                 "merge_mode": "replace",
-                "addons": {
-                    "apt": {
-                        "sources": [ {"sourceline": "ppa:cs50/ppa"} ],
-                        "packages": [ "libcs50" ]
-                     }
-                 },
-                "before_script": [
-                    "git clone -b develop https://github.com/cs50/check50.git",
-                    "cd check50",
-                    "pip3 install -r requirements.txt"
-                ],
                 "script": "python3 check50.py --full --local {} ../*".format(branch),
                 "notifications": { "webhooks": "https://cs50.me/hooks/travis" }
             }
